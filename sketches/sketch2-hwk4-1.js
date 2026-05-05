@@ -35,9 +35,9 @@ registerSketch('sk2', function (p) {
   }
 
   p.preload = function () {
-    heroimg = p.loadImage('/assets/superhero.png');
-    flagimg = p.loadImage("/assets/flag.png");
-    bgimg = p.loadImage("assets/background.jpg");
+    heroimg = p.loadImage('assets/superhero.png');
+    flagimg = p.loadImage('assets/flag.png');
+    bgimg = p.loadImage('assets/background.jpg');
   }
 
   p.setup = function () {
