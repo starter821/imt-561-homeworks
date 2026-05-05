@@ -1,7 +1,7 @@
 registerSketch('sk3', function (p) {
   const CANVAS_SIZE = 800;
 
-  let totalTime = 50 * 60;
+  let totalTime = 1 * 60;
   let remainingTime = totalTime;
   let running = false;
   let finished = false;
@@ -27,6 +27,8 @@ registerSketch('sk3', function (p) {
 
   let overlayAlpha = 0;
 
+  let saveButton = { x: 0, y: 0, w: 200, h: 44 };
+  let continueButton = { x: 0, y: 0, w: 260, h: 44 };
 
   const BG = [248, 247, 244];
   const TXT_DARK = [30, 30, 28];
@@ -395,9 +397,48 @@ registerSketch('sk3', function (p) {
     p.textSize(72);
     p.text("Time’s Up", CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 90);
 
-    
-  }
+    // SAVE button
+    saveButton.x = CANVAS_SIZE / 2 - saveButton.w / 2;
+    saveButton.y = CANVAS_SIZE / 2 - 10;
 
+    let saveHover =
+      p.mouseX >= saveButton.x &&
+      p.mouseX <= saveButton.x + saveButton.w &&
+      p.mouseY >= saveButton.y &&
+      p.mouseY <= saveButton.y + saveButton.h;
+
+    p.fill(
+      saveHover
+        ? p.color(80, 160, 120, overlayAlpha)
+        : p.color(60, 130, 90, overlayAlpha)
+    );
+    p.rect(saveButton.x, saveButton.y, saveButton.w, saveButton.h, 10);
+
+    p.fill(255, overlayAlpha);
+    p.textSize(16);
+    p.text("Save notes (.txt)", CANVAS_SIZE / 2, saveButton.y + saveButton.h / 2);
+
+    // CONTINUE button
+    continueButton.x = CANVAS_SIZE / 2 - continueButton.w / 2;
+    continueButton.y = saveButton.y + 60;
+
+    let contHover =
+      p.mouseX >= continueButton.x &&
+      p.mouseX <= continueButton.x + continueButton.w &&
+      p.mouseY >= continueButton.y &&
+      p.mouseY <= continueButton.y + continueButton.h;
+
+    p.fill(
+      contHover
+        ? p.color(220, 220, 220, overlayAlpha)
+        : p.color(190, 190, 190, overlayAlpha)
+    );
+    p.rect(continueButton.x, continueButton.y, continueButton.w, continueButton.h, 10);
+
+    p.fill(40, overlayAlpha);
+    p.text("Continue without saving", CANVAS_SIZE / 2, continueButton.y + continueButton.h / 2);
+  }
+  ``
 
   function drawFrame() {
     p.noFill();
@@ -412,6 +453,38 @@ registerSketch('sk3', function (p) {
   }
 
   p.mousePressed = function () {
+
+    if (finished) {
+      // SAVE
+      if (
+        p.mouseX >= saveButton.x &&
+        p.mouseX <= saveButton.x + saveButton.w &&
+        p.mouseY >= saveButton.y &&
+        p.mouseY <= saveButton.y + saveButton.h
+      ) {
+        exportAnnotationsAsTXT();
+
+        annotations = [];
+        remainingTime = totalTime;
+        finished = false;
+        overlayAlpha = 0;
+      }
+
+      // CONTINUE WITHOUT SAVING
+      if (
+        p.mouseX >= continueButton.x &&
+        p.mouseX <= continueButton.x + continueButton.w &&
+        p.mouseY >= continueButton.y &&
+        p.mouseY <= continueButton.y + continueButton.h
+      ) {
+        annotations = [];
+        remainingTime = totalTime;
+        finished = false;
+        overlayAlpha = 0;
+      }
+
+      return;
+    }
 
     if (annotOpen) {
       let cx = 160, cy = 170;
@@ -482,6 +555,33 @@ registerSketch('sk3', function (p) {
     }
   };
 
+  function exportAnnotationsAsTXT() {
+    let lines = [];
+    lines.push(`Session length: ${Math.round(totalTime / 60)} minutes`);
+    lines.push('');
+
+    annotations.forEach((ann, i) => {
+      let mins = Math.floor(ann.elapsed / 60);
+      let secs = Math.floor(ann.elapsed % 60);
+      let time = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+      lines.push(`[${time}] ${ann.title || 'Untitled'}`);
+      if (ann.page) lines.push(`Page: ${ann.page}`);
+      if (ann.tag) lines.push(`Tag: ${ann.tag}`);
+      if (ann.note) lines.push(ann.note);
+      lines.push('');
+    });
+
+    let blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = 'annotations.txt';
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
 
   p.keyPressed = function () {
     if (annotOpen) {
