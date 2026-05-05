@@ -20,8 +20,6 @@ registerSketch('sk2', function (p) {
     { x: 700, y: 250 },
   ];
 
-
-
   let path = [];
 
   // ===== UI =====
@@ -34,11 +32,14 @@ registerSketch('sk2', function (p) {
 
   p.preload = function () {
     Garamond = p.loadFont('assets/EBGaramond-VariableFont_wght.ttf');
+    GaramondBold = p.loadFont('assets/EBGaramond-Bold.ttf');
+    heroimg = p.loadImage('images/superhero.png');
+    flagimg = p.loadImage("images/flag.png");
   }
 
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
-    p.textFont(Garamond); // more map-like
+    p.textFont('Arial');
     p.curveTightness(3);
     generateDensePath();
 
@@ -88,8 +89,9 @@ registerSketch('sk2', function (p) {
 
     drawRoad(path, p.color(60, 40, 20), 1, 36);       // outline
     drawRoad(path, p.color(170, 140, 90), 1, 24);     // base road
-    drawRoad(trackPath, p.color(120, 80, 30), progress, 20); // progress
+    drawRoad(trackPath, p.color(255, 239, 212), progress, 20); // progress
 
+    drawGoal();
     drawHero(progress);
     drawLandmarks();
 
@@ -113,7 +115,7 @@ registerSketch('sk2', function (p) {
 
   // ===== BACKGROUND =====
   function drawMapBackground() {
-    p.background(255, 239, 212);
+    p.background(252, 247, 235);
 
   }
 
@@ -206,11 +208,21 @@ registerSketch('sk2', function (p) {
 
     p.beginShape();
     for (let i = 0; i < count; i++) {
-      let offset = p.noise(i * 0.1) * 2 - 1;
-      p.vertex(points[i].x + offset, points[i].y + offset);
+      // let offset = p.noise(i * 0.1) * 2 - 1;
+      p.vertex(points[i].x, points[i].y);
     }
 
     p.endShape();
+  }
+
+  // ===== GOAL =====
+  function drawGoal() {
+    let pt = anchors[anchors.length - 1];
+
+    p.push();
+    p.imageMode(p.CENTER);
+    p.image(flagimg, pt.x, pt.y, 60, 60);
+    p.pop();
   }
 
   // ===== HERO =====
@@ -222,20 +234,31 @@ registerSketch('sk2', function (p) {
     let x = p.lerp(path[i].x, path[next].x, t);
     let y = p.lerp(path[i].y, path[next].y, t);
 
-    p.fill(80, 30, 20);
-    p.stroke(240, 220, 170);
-    p.strokeWeight(2);
-    p.ellipse(x, y, 14, 18);
+    let angle = p.atan2(trackPath[next].y - trackPath[i].y, trackPath[next].x - trackPath[i].x);
+
+    let w = 60;
+    let h = 60;
+
+    p.push();
+    p.translate(x, y);
+    p.rotate(angle);
+    p.imageMode(p.CENTER);
+    p.image(heroimg, 0, 0, w, h);
+    p.pop();
   }
 
   // ===== LANDMARKS =====
   function drawLandmarks() {
     [0.25, 0.5, 0.75].forEach(t => {
-      let idx = Math.floor((path.length - 1) * t);
-      let pt = path[idx];
+      let idx = Math.floor((trackPath.length - 1) * t);
+      let pt = trackPath[idx];
       p.noStroke();
-      p.fill(100, 70, 30);
-      p.circle(pt.x, pt.y, 10);
+      p.fill(252, 247, 235);
+      p.textFont('Arial');
+      p.textAlign(p.CENTER , p.CENTER);
+      p.textSize(12);
+      p.textStyle(p.BOLD);
+      p.text(Math.round(t * 100) + '%', pt.x + 1, pt.y);
     });
   }
 
