@@ -1,7 +1,6 @@
 registerSketch('sk3', function (p) {
   const CANVAS_SIZE = 800;
 
-  // ===== TIMER STATE =====
   let totalTime = 50 * 60;
   let remainingTime = totalTime;
   let running = false;
@@ -16,11 +15,11 @@ registerSketch('sk3', function (p) {
     return { label, x, y, w, h, action, hovered: false };
   }
 
-  // ===== PALETTE =====
-  const BG       = [248, 247, 244];  // off-white paper
-  const TXT_DARK = [30,  30,  28];   // near-black
-  const TXT_MID  = [140, 138, 133];  // muted
-  const GREEN    = [60,  130, 90];   // sage green (selected / accent)
+  // ===== PALETTE =====drawProgressBar();
+  const BG = [248, 247, 244];  // off-white paper
+  const TXT_DARK = [30, 30, 28];   // near-black
+  const TXT_MID = [140, 138, 133];  // muted
+  const GREEN = [60, 130, 90];   // sage green (selected / accent)
   const GREEN_LT = [140, 190, 160];  // lighter sage (hover)
 
   p.setup = function () {
@@ -28,20 +27,20 @@ registerSketch('sk3', function (p) {
     p.textFont('Inter');
 
     buttons = [
-      makeButton('15m', 30,  18, 56, 36, () => setTimer(15 * 60)),
-      makeButton('25m', 94,  18, 56, 36, () => setTimer(25 * 60)),
+      makeButton('15m', 30, 18, 56, 36, () => setTimer(15 * 60)),
+      makeButton('25m', 94, 18, 56, 36, () => setTimer(25 * 60)),
       makeButton('30m', 158, 18, 56, 36, () => setTimer(30 * 60)),
       makeButton('60m', 222, 18, 56, 36, () => setTimer(60 * 60)),
       makeButton('90m', 286, 18, 56, 36, () => setTimer(90 * 60)),
-      makeButton('Set',    514, 18, 48, 36, () => {
+      makeButton('Set', 514, 18, 48, 36, () => {
         let m = parseInt(inputMins.value) || 0;
         if (m > 0) { setTimer(m * 60); inputMins.value = ''; }
       }),
-      makeButton('Start',  572, 18, 60, 36, () => {
+      makeButton('Start', 572, 18, 60, 36, () => {
         if (!finished && remainingTime > 0) { running = true; lastMillis = p.millis(); }
       }),
-      makeButton('Pause',  642, 18, 60, 36, () => running = false),
-      makeButton('Reset',  712, 18, 60, 36, () => {
+      makeButton('Pause', 642, 18, 60, 36, () => running = false),
+      makeButton('Reset', 712, 18, 60, 36, () => {
         running = false; finished = false; remainingTime = totalTime;
       }),
     ];
@@ -60,6 +59,7 @@ registerSketch('sk3', function (p) {
     drawBackground();
     drawTopBar();
     drawTimerFace();
+    drawProgressBar();
     drawFrame();
   };
 
@@ -96,7 +96,7 @@ registerSketch('sk3', function (p) {
     p.strokeWeight(1);
     p.line(0, 72, CANVAS_SIZE, 72);
 
-    const presetMap = { '15m': 15*60, '25m': 25*60, '30m': 30*60, '60m': 60*60, '90m': 90*60 };
+    const presetMap = { '15m': 15 * 60, '25m': 25 * 60, '30m': 30 * 60, '60m': 60 * 60, '90m': 90 * 60 };
 
     buttons.forEach(function (btn) {
       btn.hovered = (
@@ -145,8 +145,8 @@ registerSketch('sk3', function (p) {
 
   // ===== TIMER FACE =====
   function drawTimerFace() {
-    let m   = Math.floor(remainingTime / 60);
-    let s   = Math.floor(remainingTime % 60);
+    let m = Math.floor(remainingTime / 60);
+    let s = Math.floor(remainingTime % 60);
     let txt = m + ':' + String(s).padStart(2, '0');
 
     // state label
@@ -156,8 +156,8 @@ registerSketch('sk3', function (p) {
     p.textSize(13);
     p.textStyle(p.NORMAL);
     let stateLabel = finished ? 'SESSION COMPLETE'
-                   : running  ? 'TIME REMAINING'
-                   : 'PAUSED';
+      : running ? 'TIME REMAINING'
+        : 'PAUSED';
     p.text(stateLabel, CANVAS_SIZE / 2, 108);
 
     // big time digits
@@ -170,7 +170,7 @@ registerSketch('sk3', function (p) {
     // elapsed sub-label
     let elMins = Math.floor((totalTime - remainingTime) / 60);
     let elSecs = Math.floor((totalTime - remainingTime) % 60);
-    let elStr  = String(elMins).padStart(2,'0') + ':' + String(elSecs).padStart(2,'0') + ' elapsed';
+    let elStr = String(elMins).padStart(2, '0') + ':' + String(elSecs).padStart(2, '0') + ' elapsed';
 
 
     p.fill(...TXT_MID);
@@ -178,6 +178,39 @@ registerSketch('sk3', function (p) {
     p.textAlign(p.CENTER, p.TOP);
     p.textStyle(p.NORMAL);
     p.text(elStr, CANVAS_SIZE / 2, 278);
+  }
+
+  function drawProgressBar() {
+    let barX = 80, barY = 360, barW = CANVAS_SIZE - 160, barH = 30;
+    let progress = totalTime > 0 ? p.constrain(1 - remainingTime / totalTime, 0, 1) : 0;
+
+    // track
+    p.noStroke();
+    p.fill(220, 218, 212);
+    p.rect(barX, barY, barW, barH, 12);
+
+    // fill
+    if (progress > 0) {
+      p.fill(140, 140, 140);
+      p.rect(barX, barY, barW * progress, barH, 12);
+    }
+
+
+    [0.25, 0.5, 0.75].forEach(pct => {
+      let tx = barX + barW * pct;
+      let passed = progress >= pct;
+
+      p.stroke(passed ? [...GREEN] : [180, 178, 173]);
+      p.strokeWeight(1.5);
+      p.line(tx, barY - 6, tx, barY + barH + 6);
+
+      p.noStroke();
+      p.fill(passed ? [...GREEN] : [...TXT_MID]);
+      p.textSize(11);
+      p.textAlign(p.CENTER, p.TOP);
+      p.text(Math.round(pct * 100) + '%', tx, barY + barH + 10);
+    });
+
   }
 
   // ===== FRAME =====
