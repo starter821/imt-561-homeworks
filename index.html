@@ -31,9 +31,12 @@
       <button type="button" class="tab-btn" data-target="tab12" data-sketch="sk12" role="tab">Ex 7</button>
       <button type="button" class="tab-btn" data-target="tab13" data-sketch="sk13" role="tab">Ex 8</button>
       <button type="button" class="tab-btn" data-target="tab14" data-sketch="sk14" role="tab">Ex 9</button>
-      <button type="button" class="tab-btn tab-btn-highlight" data-target="tab16" data-sketch="sk16" role="tab">Ex 10 **</button>
-      <button type="button" class="tab-btn tab-btn-highlight" data-target="tab17" data-sketch="sk17" role="tab">Ex 11 **</button>
-      <button type="button" class="tab-btn tab-btn-highlight" data-target="tab18" data-sketch="sk18" role="tab">Ex 12 **</button>
+      <button type="button" class="tab-btn tab-btn-highlight" data-target="tab16" data-sketch="sk16" role="tab">Ex 10
+        **</button>
+      <button type="button" class="tab-btn tab-btn-highlight" data-target="tab17" data-sketch="sk17" role="tab">Ex 11
+        **</button>
+      <button type="button" class="tab-btn tab-btn-highlight" data-target="tab18" data-sketch="sk18" role="tab">Ex 12
+        **</button>
       <button type="button" class="tab-btn" data-target="tab15" data-sketch="sk15" role="tab">HWK 5</button>
     </nav>
 
@@ -45,13 +48,16 @@
         <div class="welcome-profile">
           <div class="welcome-photo" role="img" aria-label="Profile photo placeholder">
             <!-- Replace with your own photo -->
-            <img src="assets/IMG_3430.JPG" alt="Photo of Sunghee Park" /> 
+            <img src="assets/IMG_3430.JPG" alt="Photo of Sunghee Park" />
           </div>
 
           <div class="welcome-copy">
             <p><strong>Sunghee Park</strong> She/Her </p>
-            <p>I am a senior in Informatics Program at the University of Washington, focused on data science and data analysis.</p>
-            <p>This quarter I want to improve how I design intuitive and interpretable visualizations by applying core principles of perception, hierarchy, and interaction design.</p></p>
+            <p>I am a senior in Informatics Program at the University of Washington, focused on data science and data
+              analysis.</p>
+            <p>This quarter I want to improve how I design intuitive and interpretable visualizations by applying core
+              principles of perception, hierarchy, and interaction design.</p>
+            </p>
           </div>
         </div>
       </div>
@@ -63,9 +69,8 @@
       <div id="sketch-drawing-sk2" class="sketch-evolution">
         <div class="welcome-template hwk-template" aria-labelledby="sk2-notes-title">
           <h3 id="sk2-notes-title">Documenting iterative process</h3>
-          <p class="small-note">Replace placeholders with your own notes and images.</p>
           <p>
-            Context of use: Explain where your clocks/timers would be used, by whom, and what problem they help solve. [add 2-3 sentences]
+            Context of use: This timer is designed for reading sessions, especially for people who struggle to stay focused. I often use a timer to force myself to concentrate for a fixed amount of period, instead of getting distracted. This helps turn reading into a fun, manageable task and makes it easier to maintain focus over time.
           </p>
 
           <article class="clock-template">
@@ -73,22 +78,34 @@
             <p class="small-note">Sketch iteration documentation (paper/hand-drawn photos)</p>
             <div class="iteration-grid">
               <figure class="iteration-item">
-                <!-- <img src="images/clock1-sketch1.jpg" alt="Clock 1 sketch iteration 1" /> -->
-                <div class="image-placeholder">Clock 1 sketch photo 1</div>
+                <img src="images/sk1-evolution-1.jpg" alt="Clock 1 sketch iteration 1" />
+                <p>Step 1: Initial Layout</p>
+                <!-- <div class="image-placeholder">Clock 1 sketch photo 1</div> -->
               </figure>
               <figure class="iteration-item">
-                <!-- <img src="images/clock1-sketch2.jpg" alt="Clock 1 sketch iteration 2" /> -->
-                <div class="image-placeholder">Clock 1 sketch photo 2</div>
+                <img src="images/sk1-evolution-2.png" alt="Clock 1 sketch iteration 2" />
+                <p>Step 2: Coded Out </p>
+                <!-- <div class="image-placeholder">Clock 1 sketch photo 2</div> -->
+              </figure>
+                  <figure class="iteration-item">
+                <img src="images/sk1-evolution-3.jpg" alt="Clock 1 sketch iteration 2" />
+                <p>Step 3: Added Buttons for Accessibiltiy</p>
+                <!-- <div class="image-placeholder">Clock 1 sketch photo 2</div> -->
               </figure>
             </div>
+            <p>Design Choices</p>
+            <ul>
+              <li>The design started with the idea of turning a timer into a “Hero's Journey” instead of a simple countdown. I used a squiggly path to represent progress over time, since a straight line felt too mechanical and didn’t match the reading context.</li>
+              <li>For color, I chose brown tones to create a calm mood and connect to the feeling of reading physical books. The background was styled to resemble paper so the path stands out while still fitting the theme. To make progress clearly visible, I used a bright, high-contrast color for the path fill. This improves readability and accessibility, since users can quickly see how much time has passed without relying on the numeric clock.</li>
+              <li>Because the path is irregular and harder to read visually, I added 25%, 50%, and 75% landmarks. These act as checkpoints so users can estimate progress at a glance. I made them the same color as the fill, so once the path passes them, they disappear, reinforcing the sense of moving forward.</li>
+              <li>I also made sure the hero character uses a distinct color from both the path and the fill. This follows hierarchy principles, the hero is the primary focus, the filled path shows progress, and the background/path structure stays secondary.</li>
+              <li>I added preset timers and maintained strong contrast to support accessibility, making the timer easier to use quickly and for a wider range of users.</li>
+            </ul>
             <p>
-              Design process: In 1–2 paragraphs (or bullet points), explain how this clock evolved from sketches to final
-              form. Name the information visualization principles you applied (readability, hierarchy, color, layout,
-              interaction, accessibility). [mention 2-3 design decisions and why]
+              Self-reflection / future work
             </p>
-            <p>
-              Self-reflection / future work: What would you improve next, and why? [add two improvements you'd make and explain why]
-            </p>
+            <p>In the future, I would first increase overall scale. The path, text, and character are readable, but not as clear as they could be. Making everything larger would improve visibility and reduce effort needed to understand progress, especially at a glance. I would also add a completion sound. Since users are likely reading and not looking at the screen, a sound cue would make the timer more functional. It ensures the end of the session is noticeable without relying on visual attention.</p>
+
           </article>
         </div>
       </div>
@@ -102,7 +119,8 @@
           <h3 id="sk3-notes-title">Documenting iterative process</h3>
           <p class="small-note">Replace placeholders with your own notes and images.</p>
           <p>
-            Context of use: Explain where your clocks/timers would be used, by whom, and what problem they help solve. [add 2-3 sentences]
+            Context of use: Explain where your clocks/timers would be used, by whom, and what problem they help solve.
+            [add 2-3 sentences]
           </p>
 
           <article class="clock-template">
@@ -123,7 +141,8 @@
               explicit which visualization considerations shaped the result. [mention 2-3 design decisions and why]
             </p>
             <p>
-              Self-reflection / future work: What would you improve next, and why? [add two improvements you'd make and explain why]
+              Self-reflection / future work: What would you improve next, and why? [add two improvements you'd make and
+              explain why]
             </p>
           </article>
         </div>
@@ -179,7 +198,8 @@
           <h3 id="sk16-notes-title">Documenting iterative process</h3>
           <p class="small-note">
             by Raizel Lagunero —
-            <a href="https://github.com/lagunra/interactive_info_vis_474/blob/main/sketches/sketch4.js" target="_blank" rel="noopener noreferrer">source code</a>
+            <a href="https://github.com/lagunra/interactive_info_vis_474/blob/main/sketches/sketch4.js" target="_blank"
+              rel="noopener noreferrer">source code</a>
           </p>
           <p>
             Context of use: This clock is based on a bookshelf that adds to the cozy, focused ambiance of studying.
@@ -238,7 +258,8 @@
           <h3 id="sk17-notes-title">Documenting iterative process</h3>
           <p class="small-note">
             by Yongxi Chen —
-            <a href="https://github.com/yongxi1202/interactive_info_vis/blob/main/sketches/sketch2.js" target="_blank" rel="noopener noreferrer">source code</a>
+            <a href="https://github.com/yongxi1202/interactive_info_vis/blob/main/sketches/sketch2.js" target="_blank"
+              rel="noopener noreferrer">source code</a>
           </p>
           <p>
             Context of use: This sketch represents the rhythm of box breathing, a meditation technique used to calm
@@ -302,7 +323,8 @@
           <h3 id="sk18-notes-title">Documenting iterative process</h3>
           <p class="small-note">
             by Teresa Wang —
-            <a href="https://github.com/TeresaWww/interactive_info_vis/blob/main/sketches/sketch2.js" target="_blank" rel="noopener noreferrer">source code</a>
+            <a href="https://github.com/TeresaWww/interactive_info_vis/blob/main/sketches/sketch2.js" target="_blank"
+              rel="noopener noreferrer">source code</a>
           </p>
           <p>
             Context: This clock is designed for people who love making pancakes. It works as a fun, visual timer to use
