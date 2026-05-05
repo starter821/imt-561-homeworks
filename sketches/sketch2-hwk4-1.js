@@ -7,40 +7,42 @@ registerSketch('sk2', function (p) {
   let running = false;
   let finished = false;
   let lastMillis = 0;
+  let overlayAlpha = 0;
 
   // ===== PATH =====
   let anchors = [
-    { x: 100, y: 700 },
-    { x: 300, y: 550 },
-    { x: 150, y: 400 },
-    { x: 300, y: 400 },
-    { x: 500, y: 480 },
-    { x: 620, y: 400 },
-    { x: 500, y: 300 },
-    { x: 700, y: 250 },
+    { x: 100, y: 690 },
+    { x: 300, y: 540 },
+    { x: 150, y: 390 },
+    { x: 300, y: 390 },
+    { x: 500, y: 470 },
+    { x: 620, y: 390 },
+    { x: 500, y: 290 },
+    { x: 700, y: 240 },
   ];
 
   let path = [];
+  let trackPath = [];
 
   // ===== UI =====
   let buttons = [];
-  let inputBox = { x: 490, y: 18, w: 80, h: 36, value: '', active: false };
+  let inputMins = { x: 430, y: 18, w: 55, h: 36, value: '', active: false };
+  let inputSecs = { x: 490, y: 18, w: 55, h: 36, value: '', active: false };
+  let overlayClose = { x: 0, y: 0, size: 40 };
 
   function makeButton(label, x, y, w, h, action) {
     return { label, x, y, w, h, action, hovered: false };
   }
 
   p.preload = function () {
-    Garamond = p.loadFont('assets/EBGaramond-VariableFont_wght.ttf');
-    GaramondBold = p.loadFont('assets/EBGaramond-Bold.ttf');
     heroimg = p.loadImage('images/superhero.png');
     flagimg = p.loadImage("images/flag.png");
+    bgimg = p.loadImage("images/background.jpg");
   }
 
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
     p.textFont('Arial');
-    p.curveTightness(3);
     generateDensePath();
 
 
@@ -50,23 +52,27 @@ registerSketch('sk2', function (p) {
       makeButton('45m', 170, 18, 60, 36, () => setTimer(45 * 60)),
       makeButton('60m', 240, 18, 60, 36, () => setTimer(60 * 60)),
       makeButton('Set', 580, 18, 50, 36, () => {
-        let val = parseInt(inputBox.value);
-        if (!isNaN(val) && val > 0) {
-          setTimer(val * 60);
-          inputBox.value = '';
+        let m = parseInt(inputMins.value) || 0;
+        let s = parseInt(inputSecs.value) || 0;
+        let total = m * 60 + s;
+        if (total > 0) {
+          setTimer(total);
+          inputMins.value = '';
+          inputSecs.value = '';
         }
       }),
-      makeButton('Start', 650, 18, 60, 36, () => {
+      makeButton('Start', 575, 18, 60, 36, () => {
         if (!finished && remainingTime > 0) {
           running = true;
           lastMillis = p.millis();
         }
       }),
-      makeButton('Pause', 720, 18, 60, 36, () => running = false),
-      makeButton('Reset', 390, 18, 60, 36, () => {
+      makeButton('Pause', 645, 18, 60, 36, () => running = false),
+      makeButton('Reset', 715, 18, 60, 36, () => {
         running = false;
         finished = false;
         remainingTime = totalTime;
+        overlayAlpha = 0;
       }),
     ];
   };
@@ -85,17 +91,18 @@ registerSketch('sk2', function (p) {
     drawTopBar();
     drawTimerText();
 
+
     let progress = totalTime > 0 ? p.constrain(1 - remainingTime / totalTime, 0, 1) : 0;
 
-    drawRoad(path, p.color(60, 40, 20), 1, 36);       // outline
-    drawRoad(path, p.color(170, 140, 90), 1, 24);     // base road
+    drawRoad(path, p.color(138, 104, 69), 1, 36);       // outline
+    drawRoad(path, p.color(186, 157, 93), 1, 24);     // base road
     drawRoad(trackPath, p.color(255, 239, 212), progress, 20); // progress
 
     drawGoal();
     drawHero(progress);
     drawLandmarks();
-
     drawBorder();
+    drawOverlay();
   };
 
   // ===== TIMER =====
@@ -115,7 +122,7 @@ registerSketch('sk2', function (p) {
 
   // ===== BACKGROUND =====
   function drawMapBackground() {
-    p.background(252, 247, 235);
+    p.image(bgimg, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
   }
 
@@ -123,7 +130,7 @@ registerSketch('sk2', function (p) {
   function drawTopBar() {
     p.noStroke();
     p.fill(80, 60, 30, 180);
-    p.rect(0, 0, p.width, 72);
+    p.rect(0, 0, p.width, 72, 0, 0, 12, 12);
 
     buttons.forEach(function (btn) {
       btn.hovered = (
@@ -131,27 +138,39 @@ registerSketch('sk2', function (p) {
         p.mouseY >= btn.y && p.mouseY <= btn.y + btn.h
       );
 
-      p.stroke(120, 90, 40);
       p.fill(btn.hovered ? p.color(180, 140, 60) : p.color(90, 70, 40));
       p.rect(btn.x, btn.y, btn.w, btn.h, 12);
 
       p.noStroke();
       p.fill(240, 220, 170);
       p.textAlign(p.CENTER, p.CENTER);
+      p.textStyle(p.NORMAL)
       p.textSize(13);
       p.text(btn.label, btn.x + btn.w / 2, btn.y + btn.h / 2);
     });
 
     // input box
-    p.stroke(120, 90, 40);
-    p.fill(inputBox.active ? p.color(110, 85, 50) : p.color(90, 70, 40));
-    p.rect(inputBox.x, inputBox.y, inputBox.w, inputBox.h, 12);
-
+    // mins input
+    p.fill(inputMins.active ? p.color(110, 85, 50) : p.color(90, 70, 40));
     p.noStroke();
-    p.fill(240, 220, 170);
-    let txt = inputBox.value || 'min';
+    p.rect(inputMins.x, inputMins.y, inputMins.w - 5, inputMins.h, 12);
+    p.fill(209, 209, 209);
     p.textAlign(p.LEFT, p.CENTER);
-    p.text(txt, inputBox.x + 10, inputBox.y + inputBox.h / 2);
+    p.textSize(13);
+    p.text(inputMins.value || 'min', inputMins.x + 20, inputMins.y + inputMins.h / 2);
+
+    // colon
+    p.fill(240, 220, 170);
+    p.textAlign(p.RIGHT, p.CENTER);
+    p.text(':', inputMins.x + inputMins.w + 2, inputMins.y + inputMins.h / 2);
+
+    // secs input
+    p.fill(inputSecs.active ? p.color(110, 85, 50) : p.color(90, 70, 40));
+    p.noStroke();
+    p.rect(inputSecs.x, inputSecs.y, inputSecs.w - 5, inputSecs.h, 12);
+    p.fill(209, 209, 209);
+    p.textAlign(p.LEFT, p.CENTER);
+    p.text(inputSecs.value || 'sec', inputSecs.x + 20, inputSecs.y + inputSecs.h / 2);
   }
 
   // ===== TIMER TEXT =====
@@ -162,6 +181,7 @@ registerSketch('sk2', function (p) {
 
     p.fill(70, 50, 20);
     p.textAlign(p.CENTER, p.CENTER);
+    p.textStyle(p.BOLD)
     p.textSize(46);
     p.text(txt, p.width / 2, 130);
   }
@@ -227,12 +247,12 @@ registerSketch('sk2', function (p) {
 
   // ===== HERO =====
   function drawHero(progress) {
-    let i = Math.floor((path.length - 1) * progress);
-    let next = Math.min(i + 1, path.length - 1);
-    let t = ((path.length - 1) * progress) % 1;
+    let i = Math.floor((trackPath.length - 1) * progress);
+    let next = Math.min(i + 1, trackPath.length - 1);
+    let t = ((trackPath.length - 1) * progress) % 1;
 
-    let x = p.lerp(path[i].x, path[next].x, t);
-    let y = p.lerp(path[i].y, path[next].y, t);
+    let x = p.lerp(trackPath[i].x, trackPath[next].x, t);
+    let y = p.lerp(trackPath[i].y, trackPath[next].y, t);
 
     let angle = p.atan2(trackPath[next].y - trackPath[i].y, trackPath[next].x - trackPath[i].x);
 
@@ -253,9 +273,9 @@ registerSketch('sk2', function (p) {
       let idx = Math.floor((trackPath.length - 1) * t);
       let pt = trackPath[idx];
       p.noStroke();
-      p.fill(252, 247, 235);
+      p.fill(255, 239, 212);
       p.textFont('Arial');
-      p.textAlign(p.CENTER , p.CENTER);
+      p.textAlign(p.CENTER, p.CENTER);
       p.textSize(12);
       p.textStyle(p.BOLD);
       p.text(Math.round(t * 100) + '%', pt.x + 1, pt.y);
@@ -264,7 +284,7 @@ registerSketch('sk2', function (p) {
 
   function drawBorder() {
     p.noFill();
-    p.stroke(100, 80, 40);
+    // p.stroke(100, 80, 40);
     p.rect(0, 0, p.width - 1, p.height - 1);
   }
 
@@ -277,34 +297,86 @@ registerSketch('sk2', function (p) {
       ) btn.action();
     });
 
-    inputBox.active = (
-      p.mouseX >= inputBox.x && p.mouseX <= inputBox.x + inputBox.w &&
-      p.mouseY >= inputBox.y && p.mouseY <= inputBox.y + inputBox.h
+    inputMins.active = (
+      p.mouseX >= inputMins.x && p.mouseX <= inputMins.x + inputMins.w &&
+      p.mouseY >= inputMins.y && p.mouseY <= inputMins.y + inputMins.h
     );
+    inputSecs.active = (
+      p.mouseX >= inputSecs.x && p.mouseX <= inputSecs.x + inputSecs.w &&
+      p.mouseY >= inputSecs.y && p.mouseY <= inputSecs.y + inputSecs.h
+    );
+
+    if (finished) {
+      if (p.dist(p.mouseX, p.mouseY, overlayClose.x, overlayClose.y) < overlayClose.size / 2) {
+        finished = false;
+        overlayAlpha = 0;
+        remainingTime = totalTime;
+        confetti = [];
+      }
+      return;
+    }
   };
-
   p.keyPressed = function () {
-    if (!inputBox.active) return;
-
+    let active = inputMins.active ? inputMins : inputSecs.active ? inputSecs : null;
+    if (!active) return;
     if (p.key === 'Backspace') {
-      inputBox.value = inputBox.value.slice(0, -1);
+      active.value = active.value.slice(0, -1);
     } else if (p.key === 'Enter') {
-      let val = parseInt(inputBox.value);
-      if (!isNaN(val) && val > 0) {
-        setTimer(val * 60);
-        inputBox.value = '';
+      let m = parseInt(inputMins.value) || 0;
+      let s = parseInt(inputSecs.value) || 0;
+      let total = m * 60 + s;
+      if (total > 0) {
+        setTimer(total);
+        inputMins.value = '';
+        inputSecs.value = '';
       }
     }
   };
 
   p.keyTyped = function () {
-    if (!inputBox.active) return;
-    if (/[0-9]/.test(p.key) && inputBox.value.length < 4) {
-      inputBox.value += p.key;
+    let active = inputMins.active ? inputMins : inputSecs.active ? inputSecs : null;
+    if (!active) return;
+    if (/[0-9]/.test(p.key) && active.value.length < 3) {
+      active.value += p.key;
     }
   };
 
   p.windowResized = function () {
     p.resizeCanvas(CANVAS_SIZE, CANVAS_SIZE);
   };
+
+  function drawOverlay() {
+    if (!finished) return;
+
+    overlayAlpha = p.min(overlayAlpha + 3, 200);
+
+    p.noStroke();
+    p.fill(0, 0, 0, overlayAlpha);
+    p.rect(0, 0, p.width, p.height);
+
+    p.fill(255, 220, 100, overlayAlpha);
+    p.textAlign(p.CENTER, p.CENTER);
+    p.textStyle(p.BOLD);
+    p.textSize(80);
+    p.text("Time's Up!", p.width / 2, p.height / 2);
+    p.textStyle(p.NORMAL);
+
+    // X button
+    let bx = p.width / 2;
+    let by = p.height / 2 + 80;
+    overlayClose.x = bx;
+    overlayClose.y = by;
+
+    let hovered = p.dist(p.mouseX, p.mouseY, bx, by) < overlayClose.size / 2;
+
+    p.fill(hovered ? p.color(220, 80, 80, overlayAlpha) : p.color(180, 60, 60, overlayAlpha));
+    p.circle(bx, by, overlayClose.size);
+
+    p.fill(255, 255, 255, overlayAlpha);
+    p.textAlign(p.CENTER, p.CENTER);
+    p.textStyle(p.BOLD);
+    p.textSize(18);
+    p.text('X', bx, by);
+    p.textStyle(p.NORMAL);
+  }
 });
