@@ -20,7 +20,9 @@ registerSketch('sk15', function (p) {
       title: 'Staying up all night',
       description: 'Which drinks are the best to keep you awake without sugar crash?',
       xaxis: 'sugar',
+      xaxis_label: 'sugar (g)',
       yaxis: 'caffeine',
+      yaxis_label: 'caffeine (mg)',
       bubbleSize: 'cal'
     },
     {
@@ -155,6 +157,7 @@ registerSketch('sk15', function (p) {
     const chartW = 600;
     const chartH = 500;
 
+
     // back button
     const backHovered = p.mouseX > 20 && p.mouseX < 80 &&
       p.mouseY > 20 && p.mouseY < 50;
@@ -167,12 +170,18 @@ registerSketch('sk15', function (p) {
     p.text('< Back', 20, 20);
 
     // title
-    p.fill(0);
+    p.fill(starGreen);
     p.textAlign(p.LEFT, p.TOP);
     p.textSize(24);
     p.textStyle(p.BOLD);
     p.text(questions[selectedQuestion].emoji + ' ' + questions[selectedQuestion].title, 20, 80);
-
+    
+    // Question
+    p.fill(0);
+    p.textSize(18);
+    p.textStyle(p.NORMAL);
+    p.textAlign(p.LEFT);
+    p.text(questions[selectedQuestion].description, chartX - 30, 120, chartW);
     // chart //
     function getMax(key) {
       return Math.max(...drinks.map(d => d[key]));
@@ -192,14 +201,14 @@ registerSketch('sk15', function (p) {
     p.line(chartX, chartY, chartX, chartY + chartH);
     p.line(chartX, chartY + chartH, chartX + chartW, chartY + chartH);
 
-    // bubbles - prepare data with positions and radii
+    // bubbles 
     let drinksWithPos = drinks.map(drink => {
       let x = toPixelX(drink[q.xaxis], q.xaxis, chartX, chartW);
       let y = toPixelY(drink[q.yaxis], q.yaxis, chartY, chartH);
       let r = p.map(drink[q.bubbleSize], 0, getMax(q.bubbleSize), 5, 30);
       return { drink, x, y, r };
     }).sort((a, b) => b.r - a.r); // largest first (drawn in back)
-    
+
     // hover detection: find smallest bubble that contains cursor (respects visual stacking)
     hoveredDrink = null;
     for (let i = drinksWithPos.length - 1; i >= 0; i--) { // iterate from smallest (front) to largest (back)
@@ -210,7 +219,7 @@ registerSketch('sk15', function (p) {
         break; // stop at first (smallest) bubble that contains cursor
       }
     }
-    
+
     // draw all bubbles
     for (let { drink, x, y, r } of drinksWithPos) {
       let col = typeColors[drink.type] || p.color(150);
@@ -239,6 +248,14 @@ registerSketch('sk15', function (p) {
       p.textAlign(p.CENTER, p.TOP);
       p.text(val, x, chartY + chartH + 8);
     }
+    
+    // x axis title
+    p.noStroke();
+    p.fill(80);
+    p.textSize(13);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.CENTER, p.TOP);
+    p.text(q.xaxis_label, chartX + chartW / 2, chartY + chartH + 35);
 
     // y axis ticks + labels
     let ySteps = Max[q.yaxis] / 25
@@ -251,6 +268,18 @@ registerSketch('sk15', function (p) {
       p.textAlign(p.RIGHT, p.CENTER);
       p.text(val, chartX - 8, y);
     }
+
+    // y axis title
+    p.push();
+    p.noStroke();
+    p.fill(80);
+    p.textSize(13);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.RIGHT, p.CENTER);
+    p.translate(-400, chartY + chartH / 2);
+    p.rotate(-p.HALF_PI)
+    p.text(q.yaxis_label, chartX - 8, chartY + chartH / 2);
+    p.pop();
 
     if (hoveredDrink) {
       let { drink, x, y } = hoveredDrink;
@@ -273,7 +302,7 @@ registerSketch('sk15', function (p) {
       p.stroke(typeColors[drink.type] || p.color(150));
       p.strokeWeight(2);
       p.rect(tx, ty, tw, th, 6);
-      
+
       // drink name
       p.noStroke();
       p.fill(starGreen);
