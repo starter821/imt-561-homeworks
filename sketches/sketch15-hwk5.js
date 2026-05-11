@@ -25,6 +25,7 @@ registerSketch('sk15', function (p) {
       yaxis_label: 'caffeine (mg)',
       bubbleSize: 'cal',
       highlightZone: { xMin: 0, xMax: 0.3, yMin: 0.7, yMax: 1.0 },
+      sort: 'caffeine-desc',
       rational: '‼️ Caffeine promotes alertness by blocking adenosine receptors in the brain, delaying sleepiness. In contrast, high sugar intake can cause a rapid rise in blood glucose followed by a crash, which accelerates fatigue. Therefore, drinks with high caffeine and low sugar are preferred to sustain alertness without the energy drop.'
     },
     {
@@ -52,7 +53,7 @@ registerSketch('sk15', function (p) {
   };
 
   p.setup = function () {
-    p.createCanvas(CANVAS_SIZE, 1000);
+    p.createCanvas(CANVAS_SIZE, 1200);
     starGreen = p.color(0, 117, 74);
     starLight = p.color(212, 233, 226);
 
@@ -95,6 +96,16 @@ registerSketch('sk15', function (p) {
       drawChartScreen();
     }
   };
+
+  function inHighlightZone(drink, q) {
+    let xValMin = q.highlightZone.xMin * Max[q.xaxis];
+    let xValMax = q.highlightZone.xMax * Max[q.xaxis];
+    let yValMin = q.highlightZone.yMin * Max[q.yaxis];
+    let yValMax = q.highlightZone.yMax * Max[q.yaxis];
+
+    return drink[q.xaxis] >= xValMin && drink[q.xaxis] <= xValMax &&
+      drink[q.yaxis] >= yValMin && drink[q.yaxis] <= yValMax;
+  }
 
   function drawHomeScreen() {
     // title
@@ -311,7 +322,7 @@ registerSketch('sk15', function (p) {
     p.textStyle(p.NORMAL);
     p.textSize(14);
     p.textAlign(p.LEFT, p.TOP);
-    p.text(questions[selectedQuestion].rational, chartX - 30, chartY + chartH + 80, chartW + 60);
+    p.text(questions[selectedQuestion].rational, chartX - 30, chartY + chartH + 82, chartW + 60);
 
     if (hoveredDrink) {
       let { drink, x, y } = hoveredDrink;
@@ -350,9 +361,84 @@ registerSketch('sk15', function (p) {
       p.text(`${q.xaxis}: ${drink[q.xaxis]}  ${q.yaxis}: ${drink[q.yaxis]}`, tx + 8, ty + 30);
       p.text(`cal: ${drink.cal}`, tx + 8, ty + 48);
     }
+
+    drawTable(q, chartX, chartY, chartH, chartW);
   };
 
+  function drawTable(q, chartX, chartY, chartH, chartW) {
+    p.textStyle(p.BOLD);
+    p.textSize(18);
+    p.fill(starGreen);
+    p.text('Top Drinks in Highlight Zone', chartX - 50, chartY + chartH + 190);
+    // filter drinks in highlight zone
+    let zoneDrinks = drinks.filter(d => inHighlightZone(d, q));
+
+    // sort by question's sort config
+    let [sortKey, sortDir] = q.sort.split('-');
+    zoneDrinks.sort((a, b) => sortDir === 'desc' ? b[sortKey] - a[sortKey] : a[sortKey] - b[sortKey]);
+
+    // cap at 10
+    zoneDrinks = zoneDrinks.slice(0, 10);
+
+    const tableX = chartX - 50;
+    const tableY = chartY + chartH + 220; // below rational box
+    const tableW = chartW + 90;
+    const rowH = 28;
+    const cols = [
+      { label: '#', key: null, w: 30 },
+      { label: 'name', key: 'name', w: 300 },
+      { label: 'drink type', key: 'type', w: 100 },
+      { label: q.xaxis_label, key: q.xaxis, w: 70 },
+      { label: q.yaxis_label, key: q.yaxis, w: 100 },
+      { label: 'cal', key: 'cal', w: 80 },
+    ];
+
+    // header row
+    p.fill(starGreen);
+    p.noStroke();
+    p.rect(tableX, tableY, tableW, rowH, 6, 6, 0, 0);
+
+    let cx = tableX + 10;
+    for (let col of cols) {
+      p.fill(255);
+      p.textSize(12);
+      p.textStyle(p.BOLD);
+      p.textAlign(p.LEFT, p.CENTER);
+      p.text(col.label, cx, tableY + rowH / 2);
+      cx += col.w;
+    }
+
+    // data rows
+    for (let i = 0; i < zoneDrinks.length; i++) {
+      let drink = zoneDrinks[i];
+      let ry = tableY + rowH + i * rowH;
+
+      // alternating row bg
+      p.fill(i % 2 === 0 ? 245 : 255);
+      p.noStroke();
+      p.rect(tableX, ry, tableW, rowH);
+
+      let vals = [i + 1, drink.name, drink.type, drink[q.xaxis], drink[q.yaxis], drink.cal];
+      cx = tableX + 10;
+      for (let j = 0; j < cols.length; j++) {
+        p.fill(j === 0 ? starGreen : 40);
+        p.textSize(12);
+        p.textStyle(j === 0 ? p.BOLD : p.NORMAL);
+        p.textAlign(p.LEFT, p.CENTER);
+        p.text(vals[j], cx, ry + rowH / 2);
+        cx += cols[j].w;
+      }
+    }
+
+    // outer border
+    p.stroke(200);
+    p.strokeWeight(1);
+    p.noFill();
+    p.rect(tableX, tableY, tableW, rowH + zoneDrinks.length * rowH, 6);
+  }
+
   p.mousePressed = function () {
+    console.log(currentScreen)
     if (currentScreen === 'home') {
       // if any card was clicked
       const totalWidth = CARD_WIDTH * 3 + 40;
