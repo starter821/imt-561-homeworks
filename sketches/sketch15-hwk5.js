@@ -24,7 +24,8 @@ registerSketch('sk15', function (p) {
       yaxis: 'caffeine',
       yaxis_label: 'caffeine (mg)',
       bubbleSize: 'cal',
-      highlightZone: { xMin: 0, xMax: 0.3, yMin: 0.7, yMax: 1.0 }
+      highlightZone: { xMin: 0, xMax: 0.3, yMin: 0.7, yMax: 1.0 },
+      rational: '‼️ Caffeine promotes alertness by blocking adenosine receptors in the brain, delaying sleepiness. In contrast, high sugar intake can cause a rapid rise in blood glucose followed by a crash, which accelerates fatigue. Therefore, drinks with high caffeine and low sugar are preferred to sustain alertness without the energy drop.'
     },
     {
       emoji: '🏋️',
@@ -51,7 +52,7 @@ registerSketch('sk15', function (p) {
   };
 
   p.setup = function () {
-    p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
+    p.createCanvas(CANVAS_SIZE, 1000);
     starGreen = p.color(0, 117, 74);
     starLight = p.color(212, 233, 226);
 
@@ -298,6 +299,19 @@ registerSketch('sk15', function (p) {
     p.rotate(-p.HALF_PI)
     p.text(q.yaxis_label, chartX - 8, chartY + chartH / 2);
     p.pop();
+
+    // rational
+    p.stroke(starGreen)
+    p.strokeWeight(1);
+    p.fill(212, 233, 226, 100); 
+    p.rect(chartX - 50, chartY + chartH + 70, chartW + 90, 90, 10);
+
+    p.fill(0);
+    p.noStroke();
+    p.textStyle(p.NORMAL);
+    p.textSize(14);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text(questions[selectedQuestion].rational, chartX - 30, chartY + chartH + 80, chartW + 60);
 
     if (hoveredDrink) {
       let { drink, x, y } = hoveredDrink;
