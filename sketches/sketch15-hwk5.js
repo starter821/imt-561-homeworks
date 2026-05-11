@@ -38,6 +38,17 @@ registerSketch('sk15', function (p) {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
     starGreen = p.color(0, 117, 74);
     starLight = p.color(212, 233, 226);
+
+    // parse data
+    drinks = data.rows
+      .filter(row => row.get('size') == 'Grande')
+      .map(row => ({
+        name: row.get('drink_name'),
+        cal: parseFloat(row.get('calories')),
+        caffeine: parseFloat(row.get('caffeine')),
+        sugar: parseFloat(row.get('sugar')),
+        protein: parseFloat(row.get('protein')),
+    }));
   };
 
   p.draw = function () {
