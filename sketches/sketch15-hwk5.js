@@ -23,7 +23,8 @@ registerSketch('sk15', function (p) {
       xaxis_label: 'sugar (g)',
       yaxis: 'caffeine',
       yaxis_label: 'caffeine (mg)',
-      bubbleSize: 'cal'
+      bubbleSize: 'cal',
+      highlightZone: { xMin: 0, xMax: 0.3, yMin: 0.7, yMax: 1.0 }
     },
     {
       emoji: '🏋️',
@@ -175,7 +176,7 @@ registerSketch('sk15', function (p) {
     p.textSize(24);
     p.textStyle(p.BOLD);
     p.text(questions[selectedQuestion].emoji + ' ' + questions[selectedQuestion].title, 20, 80);
-    
+
     // Question
     p.fill(0);
     p.textSize(18);
@@ -200,6 +201,23 @@ registerSketch('sk15', function (p) {
     p.strokeWeight(2);
     p.line(chartX, chartY, chartX, chartY + chartH);
     p.line(chartX, chartY + chartH, chartX + chartW, chartY + chartH);
+
+    // highlight zone
+    let hz = q.highlightZone;
+    let hx = chartX + hz.xMin * chartW;
+    let hy = chartY + (1 - hz.yMax) * chartH; 
+    let hw = (hz.xMax - hz.xMin) * chartW;
+    let hh = (hz.yMax - hz.yMin) * chartH;
+
+    p.noStroke();
+    p.fill(212, 233, 226, 150); 
+    p.rect(hx, hy, hw, hh);
+
+    // green border around zone
+    p.stroke(starGreen);
+    p.strokeWeight(1);
+    p.noFill();
+    p.rect(hx, hy, hw, hh);
 
     // bubbles 
     let drinksWithPos = drinks.map(drink => {
@@ -248,7 +266,7 @@ registerSketch('sk15', function (p) {
       p.textAlign(p.CENTER, p.TOP);
       p.text(val, x, chartY + chartH + 8);
     }
-    
+
     // x axis title
     p.noStroke();
     p.fill(80);
