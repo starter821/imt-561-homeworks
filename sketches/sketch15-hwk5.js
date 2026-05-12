@@ -2,6 +2,7 @@ registerSketch('sk15', function (p) {
   const CANVAS_SIZE = 800;
   const CARD_WIDTH = 220;
   const CARD_HEIGHT = 280;
+  const PADDING = 20;
 
   let data;
   let drinks = [];
@@ -242,7 +243,7 @@ registerSketch('sk15', function (p) {
     // label
     p.noStroke();
     p.fill(60);
-    p.textSize(10.6);
+    p.textSize(10.);
     p.textStyle(p.BOLD);
     p.textAlign(p.LEFT, p.CENTER);
     p.text('Recommended\nDrinks', legendX + 22, zoneY - 20);
@@ -285,10 +286,10 @@ registerSketch('sk15', function (p) {
     }
     // normalize for plotting
     function toPixelX(val, key, chartX, chartW) {
-      return chartX + (val / getMax(key)) * chartW;
+      return chartX + PADDING + (val / getMax(key)) * (chartW - PADDING);
     }
     function toPixelY(val, key, chartY, chartH) {
-      return chartY + chartH - (val / getMax(key)) * chartH; // flipped bc y=0 is top
+      return chartY + chartH - PADDING - (val / getMax(key)) * (chartH - PADDING); // flipped bc y=0 is top
     }
     let q = questions[selectedQuestion];
 
@@ -349,7 +350,7 @@ registerSketch('sk15', function (p) {
     // axis label format
     p.noStroke();
     p.fill(80);
-    p.textSize(12);
+    p.textSize(13);
     p.textStyle(p.BOLD);
 
     // x axis ticks + labels
