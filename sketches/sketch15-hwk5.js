@@ -48,6 +48,14 @@ registerSketch('sk15', function (p) {
       emoji: '🧒',
       title: 'Kid-friendly',
       description: 'Which drinks are the best for kids with low caffeine and sugar?',
+      xaxis: 'sugar',
+      xaxis_label: 'sugar (g)',
+      yaxis: 'caffeine',
+      yaxis_label: 'caffeine (mg)',
+      bubbleSize: 'cal',
+      highlightZone: { xMin: 0.2, xMax: 0.6, yMin: 0.0, yMax: 0.05 },
+      sort: 'caffeine-asc',
+      rational: '‼️ For kids, caffeine can interfere with sleep and cause restlessness, while high sugar leads to quick energy spikes followed by crashes. While a small amount of sugar can make drinks more appealing, the better choices would be those with little to no caffeine and lower overall sugar.'
     }
   ];
 
