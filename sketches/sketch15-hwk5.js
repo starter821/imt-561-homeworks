@@ -4,6 +4,8 @@ registerSketch('sk15', function (p) {
   const CARD_HEIGHT = 280;
   const PADDING = 20;
 
+  let cardHeaderHeights = [CARD_HEIGHT / 1.75, CARD_HEIGHT / 1.75, CARD_HEIGHT / 1.75];
+
   let data;
   let drinks = [];
   let currentScreen = 'home';
@@ -15,6 +17,7 @@ registerSketch('sk15', function (p) {
   let starGreen;
   let starLight;
   let typeColors;
+
 
   // question data
   const questions = [
@@ -146,41 +149,47 @@ registerSketch('sk15', function (p) {
     const startY = 120;
 
     for (let i = 0; i < 3; i++) {
-      drawCard(questions[i], startX + i * (CARD_WIDTH + 20), startY, i);
+      drawCard(questions[i], startX + i * (CARD_WIDTH + 20), startY + 30, i);
     }
   }
 
-  function drawCard(question, x, y) {
+  function drawCard(question, x, y, index) {
     const isHovered = p.mouseX > x && p.mouseX < x + CARD_WIDTH &&
       p.mouseY > y && p.mouseY < y + CARD_HEIGHT;
 
     // card background
-    p.fill(isHovered ? starLight : p.color(255, 255, 255));
-    p.stroke(isHovered ? starGreen : p.color(200, 200, 200));
+    p.fill(255);
+    p.stroke(200);
     p.strokeWeight(1);
     p.rect(x, y, CARD_WIDTH, CARD_HEIGHT, 8);
 
+    let targetH = isHovered ? CARD_HEIGHT : CARD_HEIGHT / 1.75;
+    cardHeaderHeights[index] = p.lerp(cardHeaderHeights[index], targetH, 0.2);
+
+    p.fill(starGreen);
+    p.rect(x, y, CARD_WIDTH, cardHeaderHeights[index], 8);
+
     // emoji
     p.fill(0);
-    p.textAlign(p.CENTER, p.TOP);
+    p.textAlign(p.LEFT);
     p.textSize(45);
-    p.text(question.emoji, x + CARD_WIDTH / 2, y + 70);
+    p.text(question.emoji, x + PADDING, y + 105);
 
     // title
     p.fill(0);
     p.noStroke();
     p.textSize(18);
     p.textStyle(p.BOLD);
-    p.textAlign(p.CENTER, p.TOP);
+    p.textAlign(p.LEFT, p.TOP);
     const titleY = y + CARD_HEIGHT / 2 - 20;
-    p.text(question.title, x + 10, titleY, CARD_WIDTH - 20);
+    p.text(question.title, x + PADDING, titleY + 50, CARD_WIDTH - 20);
 
     // description
-    p.fill(100);
+    p.fill(isHovered ? 255 : 100);
     p.textSize(14);
     p.textStyle(p.NORMAL);
-    p.textAlign(p.CENTER, p.TOP);
-    p.text(question.description, x + 10, y + 150, CARD_WIDTH - 20);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text(question.description, x + PADDING, y + 200, CARD_WIDTH - 30);
   }
 
   function drawLegend(q, chartX, chartY, chartW) {
