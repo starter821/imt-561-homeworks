@@ -35,6 +35,14 @@ registerSketch('sk15', function (p) {
       emoji: '🏋️',
       title: 'Post-workout',
       description: 'Which drinks are the best to refuel your body after a workout?',
+      xaxis: 'sugar',
+      xaxis_label: 'sugar (g)',
+      yaxis: 'protein',
+      yaxis_label: 'protein (g)',
+      bubbleSize: 'cal',
+      highlightZone: { xMin: 0.0, xMax: 0.3, yMin: 0.6, yMax: 1.0 },
+      sort: 'protein-desc',
+      rational: '‼️ After a workout, you need protein for muscle repair and some carbs for recovery, but too much sugar can cause a crash. Starbucks isn’t ideal for this, but the better options are those with comparatively higher protein and lower sugar, making them the most suitable choices available on the menu.'
     },
     {
       emoji: '🧒',
@@ -474,7 +482,7 @@ registerSketch('sk15', function (p) {
     p.textStyle(p.BOLD);
     p.textSize(18);
     p.fill(starGreen);
-    p.text('Top Drinks in Highlight Zone', chartX - 50, chartY + chartH + 230);
+    p.text('Top Drinks in Highlighted Zone', chartX - 50, chartY + chartH + 230);
     // filter drinks in highlight zone
     let zoneDrinks = drinks.filter(d => inHighlightZone(d, q));
 
