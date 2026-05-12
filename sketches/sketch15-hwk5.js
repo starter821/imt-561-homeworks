@@ -8,6 +8,7 @@ registerSketch('sk15', function (p) {
   let drinks = [];
   let currentScreen = 'home';
   let selectedQuestion = null;
+  let selectedType = null;
   let hoveredDrink = null;
   let hx, hy, hw, hh;
 
@@ -185,16 +186,17 @@ registerSketch('sk15', function (p) {
     for (let i = 0; i < types.length; i++) {
       let ty = legendY + 20 + i * rowH;
       let col = typeColors[types[i]];
+      let isDimmed = selectedType && selectedType !== types[i];
 
       // circle
-      p.stroke(col);
+      p.stroke(isDimmed ? p.color(210) : col);
       p.strokeWeight(1.5);
       p.noFill();
       p.circle(legendX + 8, ty + 8, 14);
 
       // label
       p.noStroke();
-      p.fill(60);
+      p.fill(isDimmed ? p.color(200) : p.color(60));
       p.textSize(11);
       p.textStyle(p.NORMAL);
       p.textAlign(p.LEFT, p.CENTER);
@@ -340,9 +342,10 @@ registerSketch('sk15', function (p) {
     // draw all bubbles
     for (let { drink, x, y, r } of drinksWithPos) {
       let col = typeColors[drink.type] || p.color(150);
+      let isFiltered = selectedType && drink.type !== selectedType;
 
-      p.stroke(col);
-      p.strokeWeight(hoveredDrink && hoveredDrink.drink === drink ? 3 : 1.5);
+      p.stroke(isFiltered ? p.color(220) : col);
+      p.strokeWeight(hoveredDrink && hoveredDrink.drink === drink ? 3 : isFiltered ? 0.5 : 1.5);
       p.noFill();
       p.circle(x, y, r * 2);
     }
@@ -540,7 +543,6 @@ registerSketch('sk15', function (p) {
   }
 
   p.mousePressed = function () {
-    console.log(currentScreen)
     if (currentScreen === 'home') {
       // if any card was clicked
       const totalWidth = CARD_WIDTH * 3 + 40;
@@ -562,6 +564,19 @@ registerSketch('sk15', function (p) {
       const chartX = 80;
       const chartY = 170;
       const chartH = 500;
+      const legendX = chartX + 620;
+      const legendY = chartY;
+      const rowH = 22;
+
+      let types = Object.keys(typeColors);
+      for (let i = 0; i < types.length; i++) {
+        let ty = legendY + 20 + i * rowH;
+        if (p.mouseX > legendX && p.mouseX < legendX + 120 &&
+          p.mouseY > ty && p.mouseY < ty + rowH) {
+          selectedType = selectedType === types[i] ? null : types[i];
+          return false;
+        }
+      }
 
       if (p.mouseX > hx && p.mouseX < hx + hw &&
         p.mouseY > hy && p.mouseY < hy + hh) {
@@ -577,8 +592,11 @@ registerSketch('sk15', function (p) {
         p.mouseY > 20 && p.mouseY < 50) {
         currentScreen = 'home';
         selectedQuestion = null;
+        selectedType = null;
         return false;
       }
+
+      selectedType = null;
     }
   };
 });
