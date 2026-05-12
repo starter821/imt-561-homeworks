@@ -227,18 +227,6 @@ registerSketch('sk15', function (p) {
     let inZone = p.mouseX > hx && p.mouseX < hx + hw &&
       p.mouseY > hy && p.mouseY < hy + hh;
 
-    if (inZone) {
-      p.fill(0, 117, 74, 220);
-      p.noStroke();
-      p.textSize(13);
-      p.textStyle(p.BOLD);
-      p.textAlign(p.CENTER, p.CENTER);
-      p.text('Click to see\nrecommended drinks', hx + hw / 2, hy + hh / 2);
-      document.body.style.cursor = 'pointer';
-    } else {
-      document.body.style.cursor = 'default';
-    }
-
     // axis lines
     p.stroke(0);
     p.strokeWeight(2);
@@ -324,6 +312,18 @@ registerSketch('sk15', function (p) {
     p.rotate(-p.HALF_PI)
     p.text(q.yaxis_label, chartX - 8, chartY + chartH / 2);
     p.pop();
+
+    if (inZone) {
+      p.fill(0, 117, 74, 220);
+      p.noStroke();
+      p.textSize(13);
+      p.textStyle(p.BOLD);
+      p.textAlign(p.CENTER, p.CENTER);
+      p.text('Click to see\nrecommended drinks', hx + hw / 2, hy + hh / 2);
+      document.body.style.cursor = 'pointer';
+    } else {
+      document.body.style.cursor = 'default';
+    }
 
     // rational
     p.stroke(starGreen)
