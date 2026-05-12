@@ -101,7 +101,7 @@ registerSketch('sk15', function (p) {
       'Hot Drinks': p.color('#FDDA0D'),
       'Cold Coffees': p.color('#95cf92'),
       'Cold Drinks': p.color('#369acc'),
-      'Frappuccino® Blended Beverages': p.color('#6c584c'),
+      'Frappuccino®': p.color('#6c584c'),
       'Iced Teas': p.color('#9656a2'),
     };
   };
@@ -196,7 +196,7 @@ registerSketch('sk15', function (p) {
     p.textSize(12);
     p.textStyle(p.BOLD);
     p.textAlign(p.LEFT, p.TOP);
-    p.text('Drink Type', legendX, legendY);
+    p.text('Filter: Drink Type', legendX, legendY);
 
     let types = Object.keys(typeColors);
     for (let i = 0; i < types.length; i++) {
