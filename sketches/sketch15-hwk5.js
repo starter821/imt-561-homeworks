@@ -141,7 +141,7 @@ registerSketch('sk15', function (p) {
     p.textSize(20);
     p.textStyle(p.NORMAL);
     p.fill(0);
-    p.text('Choose a question to find your perfect drink', p.width / 2, 75);
+    p.text('Choose a question to find your perfect drink\nWhat do you need?', p.width / 2, 75);
 
     // 3 cards
     const totalWidth = CARD_WIDTH * 3 + 40;
@@ -176,7 +176,7 @@ registerSketch('sk15', function (p) {
     p.text(question.emoji, x + PADDING, y + 105);
 
     // title
-    p.fill(0);
+    p.fill(isHovered ? 255 : 0);
     p.noStroke();
     p.textSize(18);
     p.textStyle(p.BOLD);
