@@ -165,6 +165,74 @@ registerSketch('sk15', function (p) {
     p.text(question.description, x + 10, y + 150, CARD_WIDTH - 20);
   }
 
+  function drawLegend(q, chartX, chartY, chartW) {
+    // legends for color/size
+
+    const legendX = chartX + chartW + 20;
+    const legendY = chartY;
+    const rowH = 22;
+
+    // #region type color legend
+    p.noStroke();
+    p.fill(80);
+    p.textSize(12);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text('Drink Type', legendX, legendY);
+
+    let types = Object.keys(typeColors);
+    for (let i = 0; i < types.length; i++) {
+      let ty = legendY + 20 + i * rowH;
+      let col = typeColors[types[i]];
+
+      // circle
+      p.stroke(col);
+      p.strokeWeight(1.5);
+      p.noFill();
+      p.circle(legendX + 8, ty + 8, 14);
+
+      // label
+      p.noStroke();
+      p.fill(60);
+      p.textSize(11);
+      p.textStyle(p.NORMAL);
+      p.textAlign(p.LEFT, p.CENTER);
+      p.text(types[i], legendX + 20, ty + 8);
+    }
+    // #endregion
+    // #region bubble size legend
+    let sizeY = legendY + 20 + types.length * rowH + 20;
+    p.noStroke();
+    p.fill(80);
+    p.textSize(12);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text(`Size: Calories`, legendX, sizeY);
+
+    let sizes = [5, 15, 25];
+    let maxVal = Max[q.bubbleSize];
+    let labels = [
+      `${Math.round(maxVal * 0.1)} ${q.bubbleSize}`,
+      `${Math.round(maxVal * 0.5)} ${q.bubbleSize}`,
+      `${Math.round(maxVal * 1.0)} ${q.bubbleSize}`,
+    ];
+    for (let i = 0; i < sizes.length; i++) {
+      let sy = sizeY + 25 + (i === 0 ? 0 : i === 1 ? 35 : 90);
+      p.stroke(150);
+      p.strokeWeight(1);
+      p.noFill();
+      p.circle(legendX + 20, sy + i * 1.2, sizes[i] * 2);
+      p.noStroke();
+      p.fill(80);
+      p.textSize(11);
+      p.textStyle(p.NORMAL);
+      p.textAlign(p.LEFT, p.CENTER);
+      p.text(labels[i], legendX + 25 * 2 + 6, sy);
+    }
+    // #endregion
+
+  }
+
   function drawChartScreen() {
     const chartX = 80;
     const chartY = 170;
@@ -313,6 +381,9 @@ registerSketch('sk15', function (p) {
     p.text(q.yaxis_label, chartX - 8, chartY + chartH / 2);
     p.pop();
 
+    drawLegend(q, chartX, chartY, chartW);
+
+    // highlgiht zone hover
     if (inZone) {
       p.fill(0, 117, 74, 220);
       p.noStroke();
