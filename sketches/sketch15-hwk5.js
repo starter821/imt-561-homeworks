@@ -98,7 +98,7 @@ registerSketch('sk15', function (p) {
     typeColors = {
       'Hot Coffees': p.color('#de324c'),
       'Hot Teas': p.color('#f4895f'),
-      'Hot Drinks': p.color('#f8e16f'),
+      'Hot Drinks': p.color('#FDDA0D'),
       'Cold Coffees': p.color('#95cf92'),
       'Cold Drinks': p.color('#369acc'),
       'Frappuccino® Blended Beverages': p.color('#6c584c'),
