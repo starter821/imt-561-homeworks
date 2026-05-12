@@ -394,7 +394,7 @@ registerSketch('sk15', function (p) {
     p.text(q.xaxis_label, chartX + chartW / 2, chartY + chartH + 35);
 
     // y axis ticks + labels
-    let ySteps = Max[q.yaxis] / 25
+    let ySteps = Max[q.yaxis] / (q.yaxis === 'protein' ? 5 : 25);
     for (let i = 0; i <= ySteps; i++) {
       let val = (((Max[q.yaxis] / 25) * 25) / ySteps * i).toFixed(0);
       let y = chartY + chartH - (i / ySteps) * chartH;
