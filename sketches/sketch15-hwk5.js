@@ -230,7 +230,23 @@ registerSketch('sk15', function (p) {
       p.text(labels[i], legendX + 25 * 2 + 6, sy);
     }
     // #endregion
+    // #region RECOMMENDED ZONE LEGEND
+    let zoneY = sizeY + 25 + 3 * 50 + 20;
 
+    // small green square
+    p.fill(212, 233, 226, 150);
+    p.stroke(starGreen);
+    p.strokeWeight(1);
+    p.rect(legendX, zoneY - 30, 16, 16, 3);
+
+    // label
+    p.noStroke();
+    p.fill(60);
+    p.textSize(10.6);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.LEFT, p.CENTER);
+    p.text('Recommended\nDrinks', legendX + 22, zoneY - 20);
+    // #endregion
   }
 
   function drawChartScreen() {
