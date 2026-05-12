@@ -55,7 +55,7 @@ registerSketch('sk15', function (p) {
   };
 
   p.setup = function () {
-    p.createCanvas(CANVAS_SIZE, 1200);
+    p.createCanvas(CANVAS_SIZE, 1300);
     starGreen = p.color(0, 117, 74);
     starLight = p.color(212, 233, 226);
 
@@ -417,14 +417,14 @@ registerSketch('sk15', function (p) {
     p.stroke(starGreen)
     p.strokeWeight(1);
     p.fill(212, 233, 226, 100);
-    p.rect(chartX - 50, chartY + chartH + 70, chartW + 90, 90, 10);
+    p.rect(chartX - 50, chartY + chartH + 80, CANVAS_SIZE - 40, 90, 10);
 
     p.fill(0);
     p.noStroke();
     p.textStyle(p.NORMAL);
     p.textSize(14);
     p.textAlign(p.LEFT, p.TOP);
-    p.text(questions[selectedQuestion].rational, chartX - 30, chartY + chartH + 82, chartW + 60);
+    p.text(questions[selectedQuestion].rational, chartX - 30, chartY + chartH + 100, CANVAS_SIZE - 60);
 
     if (hoveredDrink) {
       let { drink, x, y } = hoveredDrink;
@@ -471,7 +471,7 @@ registerSketch('sk15', function (p) {
     p.textStyle(p.BOLD);
     p.textSize(18);
     p.fill(starGreen);
-    p.text('Top Drinks in Highlight Zone', chartX - 50, chartY + chartH + 190);
+    p.text('Top Drinks in Highlight Zone', chartX - 50, chartY + chartH + 230);
     // filter drinks in highlight zone
     let zoneDrinks = drinks.filter(d => inHighlightZone(d, q));
 
@@ -483,16 +483,16 @@ registerSketch('sk15', function (p) {
     zoneDrinks = zoneDrinks.slice(0, 10);
 
     const tableX = chartX - 50;
-    const tableY = chartY + chartH + 220; // below rational box
-    const tableW = chartW + 90;
+    const tableY = chartY + chartH + 260; // below rational box
+    const tableW = CANVAS_SIZE - 40;
     const rowH = 28;
     const cols = [
       { label: '#', key: null, w: 30 },
       { label: 'name', key: 'name', w: 300 },
-      { label: 'drink type', key: 'type', w: 100 },
-      { label: q.xaxis_label, key: q.xaxis, w: 70 },
-      { label: q.yaxis_label, key: q.yaxis, w: 100 },
-      { label: 'cal', key: 'cal', w: 80 },
+      { label: 'drink type', key: 'type', w: 120 },
+      { label: q.xaxis_label, key: q.xaxis, w: 90 },
+      { label: q.yaxis_label, key: q.yaxis, w: 110 },
+      { label: 'cal', key: 'cal', w: 90 },
     ];
 
     // header row
