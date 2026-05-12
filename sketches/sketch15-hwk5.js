@@ -8,10 +8,11 @@ registerSketch('sk15', function (p) {
   let currentScreen = 'home';
   let selectedQuestion = null;
   let hoveredDrink = null;
+  let hx, hy, hw, hh;
 
   let starGreen;
   let starLight;
-  let typeColors
+  let typeColors;
 
   // question data
   const questions = [
@@ -170,7 +171,6 @@ registerSketch('sk15', function (p) {
     const chartW = 600;
     const chartH = 500;
 
-
     // back button
     const backHovered = p.mouseX > 20 && p.mouseX < 80 &&
       p.mouseY > 20 && p.mouseY < 50;
@@ -208,21 +208,14 @@ registerSketch('sk15', function (p) {
     }
     let q = questions[selectedQuestion];
 
-    // axis lines
-    p.stroke(0);
-    p.strokeWeight(2);
-    p.line(chartX, chartY, chartX, chartY + chartH);
-    p.line(chartX, chartY + chartH, chartX + chartW, chartY + chartH);
-
     // highlight zone
     let hz = q.highlightZone;
-    let hx = chartX + hz.xMin * chartW;
-    let hy = chartY + (1 - hz.yMax) * chartH; 
-    let hw = (hz.xMax - hz.xMin) * chartW;
-    let hh = (hz.yMax - hz.yMin) * chartH;
-
+    hx = chartX + hz.xMin * chartW;
+    hy = chartY + (1 - hz.yMax) * chartH;
+    hw = (hz.xMax - hz.xMin) * chartW;
+    hh = (hz.yMax - hz.yMin) * chartH;
     p.noStroke();
-    p.fill(212, 233, 226, 150); 
+    p.fill(212, 233, 226, 150);
     p.rect(hx, hy, hw, hh);
 
     // green border around zone
@@ -230,6 +223,27 @@ registerSketch('sk15', function (p) {
     p.strokeWeight(1);
     p.noFill();
     p.rect(hx, hy, hw, hh);
+
+    let inZone = p.mouseX > hx && p.mouseX < hx + hw &&
+      p.mouseY > hy && p.mouseY < hy + hh;
+
+    if (inZone) {
+      p.fill(0, 117, 74, 220);
+      p.noStroke();
+      p.textSize(13);
+      p.textStyle(p.BOLD);
+      p.textAlign(p.CENTER, p.CENTER);
+      p.text('Click to see\nrecommended drinks', hx + hw / 2, hy + hh / 2);
+      document.body.style.cursor = 'pointer';
+    } else {
+      document.body.style.cursor = 'default';
+    }
+
+    // axis lines
+    p.stroke(0);
+    p.strokeWeight(2);
+    p.line(chartX, chartY, chartX, chartY + chartH);
+    p.line(chartX, chartY + chartH, chartX + chartW, chartY + chartH);
 
     // bubbles 
     let drinksWithPos = drinks.map(drink => {
@@ -314,7 +328,7 @@ registerSketch('sk15', function (p) {
     // rational
     p.stroke(starGreen)
     p.strokeWeight(1);
-    p.fill(212, 233, 226, 100); 
+    p.fill(212, 233, 226, 100);
     p.rect(chartX - 50, chartY + chartH + 70, chartW + 90, 90, 10);
 
     p.fill(0);
@@ -455,6 +469,21 @@ registerSketch('sk15', function (p) {
         }
       }
     } else if (currentScreen === 'chart') {
+
+      // click highlight zone -> scroll down to table
+      const chartX = 80;
+      const chartY = 170;
+      const chartH = 500;
+
+      if (p.mouseX > hx && p.mouseX < hx + hw &&
+        p.mouseY > hy && p.mouseY < hy + hh) {
+        let canvas = document.querySelector('canvas');
+        let canvasTop = canvas.getBoundingClientRect().top + window.scrollY;
+        let tableAbsY = canvasTop + (chartY + chartH + 400);
+        window.scrollTo({ top: tableAbsY, behavior: 'smooth' });
+        return false;
+      }
+
       // if back button was clicked      
       if (p.mouseX > 20 && p.mouseX < 80 &&
         p.mouseY > 20 && p.mouseY < 50) {
