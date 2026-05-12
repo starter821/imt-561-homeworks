@@ -41,7 +41,7 @@ registerSketch('sk15', function (p) {
       yaxis_label: 'protein (g)',
       bubbleSize: 'cal',
       highlightZone: { xMin: 0.0, xMax: 0.3, yMin: 0.6, yMax: 1.0 },
-      sort: 'protein-desc',
+      sort: ['protein-desc', 'sugar-asc'],
       rational: '‼️ After a workout, you need protein for muscle repair and some carbs for recovery, but too much sugar can cause a crash. Starbucks isn’t ideal for this, but the better options are those with comparatively higher protein and lower sugar, making them the most suitable choices available on the menu.'
     },
     {
@@ -53,8 +53,8 @@ registerSketch('sk15', function (p) {
       yaxis: 'caffeine',
       yaxis_label: 'caffeine (mg)',
       bubbleSize: 'cal',
-      highlightZone: { xMin: 0.2, xMax: 0.6, yMin: 0.0, yMax: 0.05 },
-      sort: 'caffeine-asc',
+      highlightZone: { xMin: 0.2, xMax: 0.6, yMin: 0.0, yMax: 0.08 },
+      sort: ['caffeine-asc', 'sugar-asc'],
       rational: '‼️ For kids, caffeine can interfere with sleep and cause restlessness, while high sugar leads to quick energy spikes followed by crashes. While a small amount of sugar can make drinks more appealing, the better choices would be those with little to no caffeine and lower overall sugar.'
     }
   ];
@@ -494,9 +494,17 @@ registerSketch('sk15', function (p) {
     // filter drinks in highlight zone
     let zoneDrinks = drinks.filter(d => inHighlightZone(d, q));
 
-    // sort by question's sort config
-    let [sortKey, sortDir] = q.sort.split('-');
-    zoneDrinks.sort((a, b) => sortDir === 'desc' ? b[sortKey] - a[sortKey] : a[sortKey] - b[sortKey]);
+    // SORT by question's sort config
+    let sortKeys = Array.isArray(q.sort) ? q.sort : [q.sort];
+
+    zoneDrinks.sort((a, b) => {
+      for (let s of sortKeys) {
+        let [key, dir] = s.split('-');
+        let diff = dir === 'desc' ? b[key] - a[key] : a[key] - b[key];
+        if (diff !== 0) return diff;
+      }
+      return 0;
+    });
 
     // cap at 10
     zoneDrinks = zoneDrinks.slice(0, 10);
